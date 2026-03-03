@@ -1,0 +1,47 @@
+# ============================================
+# q7x.ai — .gitignore
+# ============================================
+
+# Private directory (keys, configs, notes, AI context)
+.private/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Node
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock
+
+# SQLite databases (contain user data)
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker overrides (local only)
+docker-compose.override.yml

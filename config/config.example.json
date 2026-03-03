@@ -1,0 +1,27 @@
+{
+  "agent": {
+    "name": "q7x",
+    "workspace": "/home/q7x/workspace",
+    "maxBudgetUsd": 0.50,
+    "sessionTimeoutMinutes": 60,
+    "permissionMode": "askUser"
+  },
+  "telegram": {
+    "allowedUsers": [],
+    "chunkSize": 4096
+  },
+  "ollama": {
+    "url": "http://localhost:11434",
+    "model": "qwen2.5:3b",
+    "triageEnabled": true
+  },
+  "memory": {
+    "sqlitePath": "~/.q7x/memory.db",
+    "extractionModel": "ollama",
+    "maxContextEntities": 20
+  },
+  "logging": {
+    "level": "info",
+    "auditActions": true
+  }
+}
