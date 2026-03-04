@@ -6,29 +6,25 @@ A system-level AI agent built from the ground up. Not a wrapper around someone e
 
 The agent space is split between two failure modes: tools built by brilliant engineers that are hostile to non-engineers, and pretty wrappers that are just a chat box over an API with no real depth. q7x targets the middle — a system-level agent that can actually operate on your infrastructure, remember what it's learned across sessions, and route tasks intelligently between local and cloud models.
 
-Built on Anthropic's [Claude Agent SDK](https://github.com/anthropics/claude-agent-sdk-python) with a custom memory layer, intelligent routing, and a Telegram-first interface.
-
 ## Architecture
 
 ```
-Telegram ──▶ q7x Core ──▶ Claude Agent SDK ──▶ Your Server
-  you         triage &       agentic runtime     bash, files,
-  talk        routing        (tools, compaction)  code, APIs
-  here        memory layer
-              (SQLite)
-                │
-                ▼
-              Ollama ──▶ Fast local tasks
-              (local)    (triage, classification,
-                          memory extraction)
+  you
+   │
+   ▼
+q7x Core ──▶ LLM (OpenRouter / local Ollama)
+   │
+   ├──▶ Memory Abstraction Layer  (context injection, session indexing)
+   │         └── SQLite
+   │
+   └──▶ Session log (JSONL)
 ```
 
 **Core components:**
 
-- **Claude Agent SDK** — The agentic runtime. Claude can use bash, read/write files, run tools, self-correct, and manage its own context window. We get this for free instead of building it from scratch.
-- **Memory Layer** (custom) — SQLite-backed persistent memory with entity normalization. The agent extracts structured knowledge from conversations and retrieves relevant context on demand. Not raw chat logs — distilled facts, decisions, and preferences.
-- **Intelligent Router** (custom) — Triages incoming messages to the right backend: instant answers from memory, fast responses from local Ollama, or full agentic sessions via the Agent SDK. Optimizes for speed, cost, and capability.
-- **Telegram Interface** — First communication channel. Inline keyboards for trust boundary confirmations, structured responses, session management.
+- **q7x Core** — The agent process. Manages conversation state, routes to the right LLM, injects memory context, logs sessions.
+- **Memory Layer** (custom) — A standalone service that indexes session history, extracts entities and facts, and serves relevant context on demand via a simple HTTP interface. Not raw chat logs — structured knowledge retrieved selectively.
+- **LLM Backends** — OpenRouter for cloud model access (frontier models), local Ollama for fast/private tasks. The agent routes based on task complexity.
 
 See [docs/architecture.md](docs/architecture.md) for the full design.
 
@@ -38,29 +34,28 @@ Three reasons:
 
 1. **Immediate utility.** This isn't a learning exercise that lives in a drawer. The agent handles real tasks from day one — server management, document processing, research, workflow automation.
 
-2. **Memory is the product.** Every existing agent forgets everything between sessions or dumps the entire history into context (expensive and dumb). q7x's memory layer — with entity normalization, lazy-loaded context, and transparent token management — is the actual differentiator.
+2. **Memory is the product.** Every existing agent forgets everything between sessions or dumps the entire history into context (expensive and dumb). q7x's memory layer — with entity extraction, lazy-loaded context, and selective injection — is the actual differentiator.
 
-3. **Dual deployment model.** Clone it for personal use with your Claude subscription, or bring your own API key for production/business use. Same codebase, one config switch.
+3. **Two interfaces, one core.** CLI for direct use, Telegram bot for mobile and push notifications. Same agent logic underneath.
 
-## Deployment Models
+## Current Status
 
-### Personal Use (Subscription Auth)
-Run on a Mac Mini, VPS, or home server. Authenticate with your Claude Max subscription via `claude login`. Usage counts against your plan — no per-token costs.
+**MVP 0.1 — Working CLI with cross-session memory**
 
-### Business Use (API Key Auth)
-Set `ANTHROPIC_API_KEY` in your environment. Per-token billing with full cost tracking, budget caps, and the intelligent routing layer to minimize spend.
+- Python CLI running on self-hosted infrastructure
+- Cross-session memory via standalone memory abstraction service
+- OpenRouter LLM backend (free preview model + paid fallback)
+- Sessions logged as JSONL, indexed and queryable
 
-## Project Status
+🏗️ **In active development.** TypeScript rewrite and Telegram interface are next. See [docs/implementation-plan.md](docs/implementation-plan.md).
 
-🏗️ **Building** — Active development. See [docs/implementation-plan.md](docs/implementation-plan.md) for the phased rollout.
+## Deployment
 
-## Setup
-
-Coming soon. The project is in early development.
+Designed to run on your own infrastructure — a VPS, home server, or cloud instance. Tested on Oracle Cloud ARM (Ubuntu 24.04). Minimal resource requirements: 2 cores, 4GB RAM, 10GB disk.
 
 ```bash
 # Eventually:
-git clone https://github.com/YOUR_USERNAME/q7x.ai.git
+git clone https://github.com/q7core/q7x.ai.git
 cd q7x.ai
 cp .env.example .env
 # Edit .env with your credentials
@@ -68,17 +63,16 @@ pnpm install
 pnpm start
 ```
 
-## Configuration
+*Full setup docs coming as the TypeScript build stabilises.*
 
-Copy the example files and fill in your values:
+## Configuration
 
 ```bash
 cp .env.example .env
 cp config/config.example.json config/config.json
-cp config/system-prompt.example.md config/system-prompt.md
 ```
 
-See [.env.example](.env.example) for all available settings.
+See [.env.example](.env.example) for available settings.
 
 ## Documentation
 

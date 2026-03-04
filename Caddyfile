@@ -1,0 +1,31 @@
+q7x.ai {
+    root * /srv/www
+    file_server
+    encode gzip
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+}
+
+www.q7x.ai {
+    redir https://q7x.ai{uri} permanent
+}
+
+chat.q7x.ai {
+    encode gzip
+
+    tls internal
+
+    handle /api/* {
+        reverse_proxy api:8000
+    }
+
+    handle {
+        root * /srv/chat
+        rewrite * /chat.html
+        file_server
+    }
+}

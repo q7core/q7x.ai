@@ -59,7 +59,7 @@ function getOrCreateSessionId(chatId: number): string {
 
 // ── Claude (stdin pipe) ───────────────────────────────────────────────────────
 
-function queryAgent(prompt: string, sessionId: string): Promise<string> {
+function queryAgent(prompt: string, _sessionId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const proc = spawn(
       CLAUDE_BIN,
@@ -98,7 +98,6 @@ function queryAgent(prompt: string, sessionId: string): Promise<string> {
 
     proc.on("error", reject);
 
-    // Write prompt to stdin and close
     proc.stdin.write(prompt);
     proc.stdin.end();
   });
@@ -132,7 +131,7 @@ bot.use(async (ctx, next) => {
 });
 
 bot.command("start", (ctx) => ctx.reply("q7x online."));
-bot.command("ping", (ctx) => ctx.reply("pong"));
+bot.command("ping",  (ctx) => ctx.reply("pong"));
 
 bot.command("new", async (ctx) => {
   deleteSession.run(ctx.chat.id);

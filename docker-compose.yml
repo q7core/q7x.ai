@@ -1,0 +1,72 @@
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: q7x-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy/index.html:/srv/www/index.html:ro
+      - ./chat.html:/srv/chat/chat.html:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    depends_on:
+      - api
+
+  api:
+    image: python:3.12-slim
+    container_name: q7x-api
+    restart: unless-stopped
+    working_dir: /app
+    command: sh /app/start-api.sh
+    volumes:
+      - ./api.py:/app/api.py:ro
+      - ./start-api.sh:/app/start-api.sh:ro
+      - ./chat.html:/app/chat.html:ro
+      - /home/ubuntu/.q7x:/root/.q7x
+      - /home/ubuntu/q7x/.env:/app/.env:ro
+    environment:
+      - FLASK_SECRET=changeme_in_prod
+      - STEELTRAP_ENDPOINT=http://steeltrap:7331
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    depends_on:
+      - steeltrap
+
+  steeltrap:
+    image: python:3.12-slim
+    container_name: q7x-steeltrap
+    restart: unless-stopped
+    working_dir: /app
+    command: sh /app/start-steeltrap.sh
+    volumes:
+      - /home/ubuntu/steeltrap:/app:ro
+      - /home/ubuntu/.q7x:/root/.q7x
+      - /home/ubuntu/.steeltrap:/root/.steeltrap
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+  ollama:
+    image: ollama/ollama
+    container_name: q7x-ollama
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+
+volumes:
+  caddy_data:
+  caddy_config:
+  ollama_data:
