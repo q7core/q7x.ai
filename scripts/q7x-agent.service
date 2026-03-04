@@ -1,0 +1,22 @@
+[Unit]
+Description=q7x AI Agent
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/q7x/agent
+ExecStart=/home/ubuntu/q7x/agent/node_modules/.bin/tsx src/index.ts
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+Environment=PATH=/home/ubuntu/.local/bin:/home/ubuntu/q7x/agent/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=HOME=/home/ubuntu
+Environment=USER=ubuntu
+Environment=LOGNAME=ubuntu
+Environment=XDG_CONFIG_HOME=/home/ubuntu/.config
+Environment=XDG_DATA_HOME=/home/ubuntu/.local/share
+
+[Install]
+WantedBy=multi-user.target
