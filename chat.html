@@ -8,421 +8,144 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg:        #0a0a0a;
-    --surface:   #111111;
-    --border:    #222222;
-    --border-hi: #333333;
-    --text:      #e2e2e2;
-    --muted:     #555555;
-    --accent:    #00ff88;
-    --accent-dim:#00ff8833;
-    --warn:      #ff4444;
-    --mono:      'IBM Plex Mono', monospace;
-    --sans:      'IBM Plex Sans', sans-serif;
+    --bg: #0a0a0a; --surface: #111111; --border: #222222; --border-hi: #333333;
+    --text: #e2e2e2; --muted: #555555; --accent: #00ff88; --accent-dim: #00ff8833;
+    --warn: #ff4444; --mono: 'IBM Plex Mono', monospace; --sans: 'IBM Plex Sans', sans-serif;
   }
-
   html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--sans); }
 
-  /* ── LOGIN ─────────────────────────────────────────────── */
-  #login-screen {
-    position: fixed; inset: 0; display: flex;
-    align-items: center; justify-content: center;
-    background: var(--bg);
-    z-index: 100;
-  }
+  /* LOGIN */
+  #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--bg); z-index: 100; }
   #login-screen.hidden { display: none; }
-
-  .login-box {
-    width: 360px;
-    border: 1px solid var(--border-hi);
-    padding: 40px;
-    background: var(--surface);
-  }
-
-  .login-logo {
-    font-family: var(--mono);
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: -0.5px;
-    color: var(--accent);
-    margin-bottom: 8px;
-  }
-
-  .login-sub {
-    font-size: 12px;
-    color: var(--muted);
-    font-family: var(--mono);
-    margin-bottom: 36px;
-  }
-
-  .login-box label {
-    display: block;
-    font-size: 11px;
-    font-family: var(--mono);
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-    margin-top: 20px;
-  }
-
+  .login-box { width: 360px; border: 1px solid var(--border-hi); padding: 40px; background: var(--surface); }
+  .login-logo { font-family: var(--mono); font-size: 22px; font-weight: 500; letter-spacing: -0.5px; color: var(--accent); margin-bottom: 8px; }
+  .login-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); margin-bottom: 36px; }
+  .login-box label { display: block; font-size: 11px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; margin-top: 20px; }
   .login-box label:first-of-type { margin-top: 0; }
-
-  .login-box input {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border-hi);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    padding: 10px 12px;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
+  .login-box input { width: 100%; background: var(--bg); border: 1px solid var(--border-hi); color: var(--text); font-family: var(--mono); font-size: 13px; padding: 10px 12px; outline: none; transition: border-color 0.15s; }
   .login-box input:focus { border-color: var(--accent); }
-
-  .login-btn {
-    width: 100%;
-    margin-top: 28px;
-    padding: 11px;
-    background: var(--accent);
-    color: #000;
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    border: none;
-    cursor: pointer;
-    transition: opacity 0.15s;
-  }
-
+  .login-btn { width: 100%; margin-top: 28px; padding: 11px; background: var(--accent); color: #000; font-family: var(--mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; border: none; cursor: pointer; transition: opacity 0.15s; }
   .login-btn:hover { opacity: 0.85; }
-
-  .login-error {
-    margin-top: 16px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--warn);
-    display: none;
-  }
-
+  .login-error { margin-top: 16px; font-family: var(--mono); font-size: 12px; color: var(--warn); display: none; }
   .login-error.visible { display: block; }
 
-  /* ── APP SHELL ──────────────────────────────────────────── */
-  #app {
-    display: none;
-    height: 100vh;
-    flex-direction: column;
-  }
-
+  /* APP SHELL */
+  #app { display: none; height: 100vh; flex-direction: column; }
   #app.visible { display: flex; }
 
-  /* ── TOPBAR ─────────────────────────────────────────────── */
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    height: 44px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .topbar-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .topbar-logo {
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--accent);
-  }
-
-  .topbar-model {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .topbar-btn {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    background: none;
-    border: 1px solid var(--border);
-    padding: 4px 10px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-  }
-
+  /* TOPBAR */
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 20px; height: 44px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .topbar-left { display: flex; align-items: center; gap: 16px; }
+  .topbar-logo { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); }
+  .topbar-model { font-family: var(--mono); font-size: 11px; color: var(--muted); cursor: pointer; padding: 3px 8px; border: 1px solid transparent; border-radius: 2px; transition: all 0.15s; position: relative; }
+  .topbar-model:hover { color: var(--accent); border-color: var(--border-hi); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-btn { font-family: var(--mono); font-size: 11px; color: var(--muted); background: none; border: 1px solid var(--border); padding: 4px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
   .topbar-btn:hover { color: var(--text); border-color: var(--border-hi); }
+  .topbar-tokens { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.5px; }
+  .topbar-tokens span { color: var(--text); }
 
-  /* ── MAIN LAYOUT ────────────────────────────────────────── */
-  .main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+  /* MODEL PICKER */
+  .model-picker { position: absolute; top: 40px; left: 0; width: 480px; background: var(--surface); border: 1px solid var(--border-hi); z-index: 50; display: none; box-shadow: 0 8px 32px rgba(0,0,0,0.6); }
+  .model-picker.open { display: block; }
+  .model-search { width: 100%; background: var(--bg); border: none; border-bottom: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 10px 14px; outline: none; }
+  .model-search::placeholder { color: var(--muted); }
+  .model-list { max-height: 320px; overflow-y: auto; }
+  .model-list::-webkit-scrollbar { width: 4px; }
+  .model-list::-webkit-scrollbar-track { background: transparent; }
+  .model-list::-webkit-scrollbar-thumb { background: var(--border-hi); }
+  .model-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; cursor: pointer; font-family: var(--mono); font-size: 11px; transition: background 0.1s; border-bottom: 1px solid var(--border); }
+  .model-item:hover { background: var(--accent-dim); }
+  .model-item.active { background: var(--accent-dim); color: var(--accent); }
+  .model-item-name { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; margin-right: 12px; }
+  .model-item.active .model-item-name { color: var(--accent); }
+  .model-item-price { color: var(--muted); white-space: nowrap; font-size: 10px; }
+  .model-item-free { color: var(--accent); font-size: 10px; font-weight: 500; }
+  .model-loading { padding: 20px; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
-  /* ── CHAT PANEL ─────────────────────────────────────────── */
-  .chat-panel {
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-    border-right: 1px solid var(--border);
-  }
-
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
+  /* MAIN LAYOUT */
+  .main { display: flex; flex: 1; overflow: hidden; }
+  .chat-panel { display: flex; flex-direction: column; width: 50%; border-right: 1px solid var(--border); }
+  .messages { flex: 1; overflow-y: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; }
   .messages::-webkit-scrollbar { width: 4px; }
   .messages::-webkit-scrollbar-track { background: transparent; }
   .messages::-webkit-scrollbar-thumb { background: var(--border-hi); }
-
   .message { display: flex; flex-direction: column; gap: 4px; }
-
-  .message-role {
-    font-family: var(--mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--muted);
-  }
-
+  .message-role { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
   .message.user .message-role { color: var(--accent); }
-
-  .message-content {
-    font-size: 14px;
-    line-height: 1.65;
-    color: var(--text);
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .message.assistant .message-content {
-    color: #c8c8c8;
-  }
-
-  .input-area {
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: flex-end;
-    gap: 0;
-    padding: 16px 20px;
-  }
-
-  #user-input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border-hi);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    padding: 10px 14px;
-    resize: none;
-    outline: none;
-    min-height: 42px;
-    max-height: 160px;
-    line-height: 1.5;
-    transition: border-color 0.15s;
-  }
-
+  .message-content { font-size: 14px; line-height: 1.65; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+  .message.assistant .message-content { color: #c8c8c8; }
+  .input-area { border-top: 1px solid var(--border); display: flex; align-items: flex-end; gap: 0; padding: 16px 20px; }
+  #user-input { flex: 1; background: var(--surface); border: 1px solid var(--border-hi); color: var(--text); font-family: var(--sans); font-size: 14px; padding: 10px 14px; resize: none; outline: none; min-height: 42px; max-height: 160px; line-height: 1.5; transition: border-color 0.15s; }
   #user-input:focus { border-color: var(--accent); }
-
-  .send-btn {
-    height: 42px;
-    padding: 0 18px;
-    background: var(--accent);
-    color: #000;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: opacity 0.15s;
-  }
-
+  .send-btn { height: 42px; padding: 0 18px; background: var(--accent); color: #000; font-family: var(--mono); font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; border: none; cursor: pointer; flex-shrink: 0; transition: opacity 0.15s; }
   .send-btn:hover { opacity: 0.85; }
   .send-btn:disabled { opacity: 0.4; cursor: default; }
-
-  /* ── DEV PANEL ──────────────────────────────────────────── */
-  .dev-panel {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  .dev-tabs {
-    display: flex;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .dev-tab {
-    font-family: var(--mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 12px 18px;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    transition: color 0.15s;
-  }
-
+  /* DEV PANEL */
+  .dev-panel { width: 50%; display: flex; flex-direction: column; overflow: hidden; }
+  .dev-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .dev-tab { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 12px 18px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; transition: color 0.15s; }
   .dev-tab:hover { color: var(--text); }
   .dev-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  .dev-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-  }
-
+  .dev-content { flex: 1; overflow-y: auto; padding: 20px; }
   .dev-content::-webkit-scrollbar { width: 4px; }
   .dev-content::-webkit-scrollbar-track { background: transparent; }
   .dev-content::-webkit-scrollbar-thumb { background: var(--border-hi); }
-
   .tab-pane { display: none; }
   .tab-pane.active { display: block; }
-
-  .dev-empty {
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
-    margin-top: 60px;
-  }
-
-  /* ── DEV PANEL CONTENT ──────────────────────────────────── */
+  .dev-empty { font-family: var(--mono); font-size: 12px; color: var(--muted); text-align: center; margin-top: 60px; }
   .dev-section { margin-bottom: 24px; }
-
-  .dev-section-label {
-    font-family: var(--mono);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-
-  .dev-code {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.6;
-    color: #a8d8a8;
-    white-space: pre-wrap;
-    word-break: break-all;
-    overflow-x: auto;
-  }
-
+  .dev-section-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+  .dev-code { background: var(--surface); border: 1px solid var(--border); padding: 12px; font-family: var(--mono); font-size: 11px; line-height: 1.6; color: #a8d8a8; white-space: pre-wrap; word-break: break-all; overflow-x: auto; }
   .dev-code.warn { color: #ff8888; }
   .dev-code.neutral { color: var(--text); }
+  .session-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; }
+  .session-key { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .session-val { font-family: var(--mono); font-size: 11px; color: var(--text); word-break: break-all; }
 
-  .session-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 6px 16px;
-  }
+  /* MODEL CARD */
+  .model-card { border: 1px solid var(--border); background: var(--surface); padding: 16px; margin-top: 20px; }
+  .model-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .model-card-name { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+  .model-card-id { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .model-card-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+  .model-stat { display: flex; flex-direction: column; gap: 2px; }
+  .model-stat-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .model-stat-val { font-family: var(--mono); font-size: 13px; font-weight: 500; color: var(--text); }
+  .model-stat-val.free { color: var(--accent); }
+  .model-card-desc { font-family: var(--sans); font-size: 11px; color: var(--muted); line-height: 1.5; margin-top: 12px; max-height: 60px; overflow: hidden; text-overflow: ellipsis; }
 
-  .session-key {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-  }
+  /* USAGE */
+  .usage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 8px; }
+  .usage-stat { background: var(--bg); border: 1px solid var(--border); padding: 10px; display: flex; flex-direction: column; gap: 2px; }
+  .usage-stat-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .usage-stat-val { font-family: var(--mono); font-size: 16px; font-weight: 500; color: var(--accent); }
+  .usage-stat-sub { font-family: var(--mono); font-size: 9px; color: var(--muted); }
 
-  .session-val {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--text);
-    word-break: break-all;
-  }
-
-  /* payload messages */
-  .payload-msg {
-    border-left: 2px solid var(--border-hi);
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.6;
-  }
-
-  .payload-msg.role-user    { border-left-color: var(--accent); }
-  .payload-msg.role-system  { border-left-color: #888800; }
+  /* PAYLOAD */
+  .payload-msg { border-left: 2px solid var(--border-hi); padding: 8px 12px; margin-bottom: 8px; font-family: var(--mono); font-size: 11px; line-height: 1.6; }
+  .payload-msg.role-user { border-left-color: var(--accent); }
+  .payload-msg.role-system { border-left-color: #888800; }
   .payload-msg.role-assistant { border-left-color: #4488ff; }
-
-  .payload-role {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-    color: var(--muted);
-  }
-
-  .payload-msg.role-user .payload-role    { color: var(--accent); }
-  .payload-msg.role-system .payload-role  { color: #cccc00; }
+  .payload-role { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; color: var(--muted); }
+  .payload-msg.role-user .payload-role { color: var(--accent); }
+  .payload-msg.role-system .payload-role { color: #cccc00; }
   .payload-msg.role-assistant .payload-role { color: #6699ff; }
-
   .payload-text { color: var(--text); white-space: pre-wrap; word-break: break-word; }
+  .payload-footer { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .payload-stat { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+  .payload-stat span { color: var(--text); }
 
-  /* thinking indicator */
-  .thinking {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .thinking-dots span {
-    display: inline-block;
-    animation: blink 1.2s infinite;
-    animation-fill-mode: both;
-  }
-
+  /* THINKING */
+  .thinking { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .thinking-dots span { display: inline-block; animation: blink 1.2s infinite; animation-fill-mode: both; }
   .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
   .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes blink {
-    0%, 80%, 100% { opacity: 0; }
-    40% { opacity: 1; }
-  }
+  @keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
 </style>
 </head>
 <body>
-
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
@@ -442,16 +165,21 @@
   <div class="topbar">
     <div class="topbar-left">
       <span class="topbar-logo">q7x.ai</span>
-      <span class="topbar-model" id="topbar-model">—</span>
+      <span class="topbar-model" id="topbar-model" title="Click to change model">
+        loading... ▾
+        <div class="model-picker" id="model-picker">
+          <input class="model-search" id="model-search" type="text" placeholder="Search models..." autocomplete="off">
+          <div class="model-list" id="model-list"><div class="model-loading">Loading models...</div></div>
+        </div>
+      </span>
+      <span class="topbar-tokens" id="topbar-tokens"></span>
     </div>
     <div class="topbar-right">
       <button class="topbar-btn" id="clear-btn">New Session</button>
       <button class="topbar-btn" id="logout-btn">Logout</button>
     </div>
   </div>
-
   <div class="main">
-    <!-- CHAT -->
     <div class="chat-panel">
       <div class="messages" id="messages"></div>
       <div class="input-area">
@@ -459,8 +187,6 @@
         <button class="send-btn" id="send-btn">Send</button>
       </div>
     </div>
-
-    <!-- DEV PANEL -->
     <div class="dev-panel">
       <div class="dev-tabs">
         <button class="dev-tab active" data-tab="steeltrap">Steeltrap</button>
@@ -468,271 +194,220 @@
         <button class="dev-tab" data-tab="session">Session</button>
       </div>
       <div class="dev-content">
-        <div class="tab-pane active" id="tab-steeltrap">
-          <div class="dev-empty">Send a message to see Steeltrap queries.</div>
-        </div>
-        <div class="tab-pane" id="tab-payload">
-          <div class="dev-empty">Send a message to inspect the LLM payload.</div>
-        </div>
-        <div class="tab-pane" id="tab-session">
-          <div class="dev-empty">Send a message to see session state.</div>
-        </div>
+        <div class="tab-pane active" id="tab-steeltrap"><div class="dev-empty">Send a message to see Steeltrap queries.</div></div>
+        <div class="tab-pane" id="tab-payload"><div class="dev-empty">Send a message to inspect the LLM payload.</div></div>
+        <div class="tab-pane" id="tab-session"><div class="dev-empty">Send a message to see session state.</div></div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ── State ──────────────────────────────────────────────────
-let lastDebug = null;
+let lastDebug = null, allModels = [], currentModel = '', modelMeta = null;
 
-// ── DOM ────────────────────────────────────────────────────
-const loginScreen  = document.getElementById('login-screen');
-const app          = document.getElementById('app');
-const loginEmail   = document.getElementById('login-email');
-const loginPass    = document.getElementById('login-password');
-const loginBtn     = document.getElementById('login-btn');
-const loginError   = document.getElementById('login-error');
-const messagesEl   = document.getElementById('messages');
-const userInput    = document.getElementById('user-input');
-const sendBtn      = document.getElementById('send-btn');
-const clearBtn     = document.getElementById('clear-btn');
-const logoutBtn    = document.getElementById('logout-btn');
-const topbarModel  = document.getElementById('topbar-model');
+const loginScreen = document.getElementById('login-screen');
+const app = document.getElementById('app');
+const loginEmail = document.getElementById('login-email');
+const loginPass = document.getElementById('login-password');
+const loginBtn = document.getElementById('login-btn');
+const loginError = document.getElementById('login-error');
+const messagesEl = document.getElementById('messages');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const topbarModel = document.getElementById('topbar-model');
+const topbarTokens = document.getElementById('topbar-tokens');
+const modelPicker = document.getElementById('model-picker');
+const modelSearch = document.getElementById('model-search');
+const modelList = document.getElementById('model-list');
 
-// ── Login ──────────────────────────────────────────────────
+// Login
 async function doLogin() {
   loginError.classList.remove('visible');
-  loginBtn.disabled = true;
-  loginBtn.textContent = 'Authenticating...';
-
-  const res = await fetch('/api/login', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({email: loginEmail.value, password: loginPass.value})
-  });
-
-  loginBtn.disabled = false;
-  loginBtn.textContent = 'Authenticate';
-
-  if (res.ok) {
-    loginScreen.classList.add('hidden');
-    app.classList.add('visible');
-    userInput.focus();
-  } else {
-    loginError.classList.add('visible');
-  }
+  loginBtn.disabled = true; loginBtn.textContent = 'Authenticating...';
+  const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email: loginEmail.value, password: loginPass.value}) });
+  loginBtn.disabled = false; loginBtn.textContent = 'Authenticate';
+  if (res.ok) { loginScreen.classList.add('hidden'); app.classList.add('visible'); userInput.focus(); loadStatus(); }
+  else { loginError.classList.add('visible'); }
 }
-
 loginBtn.addEventListener('click', doLogin);
 loginPass.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+// Status on load
+async function loadStatus() {
+  try { const res = await fetch('/api/status'); if (res.ok) { const d = await res.json(); currentModel = d.model; updateTopbarModel(); loadModelInfo(); } } catch(e) {}
+}
+function updateTopbarModel() {
+  topbarModel.childNodes[0].textContent = (currentModel || 'select model') + ' ▾ ';
+}
 
-// ── Logout ─────────────────────────────────────────────────
-logoutBtn.addEventListener('click', async () => {
-  await fetch('/api/logout', {method: 'POST'});
-  location.reload();
+// Model Picker
+topbarModel.addEventListener('click', e => { if (e.target.closest('.model-picker')) return; togglePicker(); });
+function togglePicker() {
+  if (modelPicker.classList.contains('open')) { modelPicker.classList.remove('open'); }
+  else { modelPicker.classList.add('open'); modelSearch.value = ''; modelSearch.focus(); if (!allModels.length) fetchModels(); else renderModelList(allModels); }
+}
+document.addEventListener('click', e => { if (!e.target.closest('.topbar-model')) modelPicker.classList.remove('open'); });
+modelPicker.addEventListener('click', e => e.stopPropagation());
+
+async function fetchModels() {
+  modelList.innerHTML = '<div class="model-loading">Loading models...</div>';
+  try { const res = await fetch('/api/models'); const d = await res.json(); allModels = d.models || []; renderModelList(allModels); }
+  catch(e) { modelList.innerHTML = '<div class="model-loading" style="color:var(--warn)">Error: '+e.message+'</div>'; }
+}
+modelSearch.addEventListener('input', () => {
+  const q = modelSearch.value.toLowerCase();
+  if (!q) { renderModelList(allModels); return; }
+  renderModelList(allModels.filter(m => m.id.toLowerCase().includes(q) || m.name.toLowerCase().includes(q)));
+});
+modelSearch.addEventListener('keydown', e => { if (e.key === 'Escape') modelPicker.classList.remove('open'); });
+function renderModelList(models) {
+  if (!models.length) { modelList.innerHTML = '<div class="model-loading">No models found.</div>'; return; }
+  modelList.innerHTML = models.map(m => {
+    const isActive = m.id === currentModel;
+    const pp = parseFloat(m.pricing.prompt); const isFree = pp === 0;
+    const price = isFree ? '<span class="model-item-free">FREE</span>' : '<span class="model-item-price">$'+(pp*1000000).toFixed(2)+'/M in</span>';
+    return '<div class="model-item'+(isActive?' active':'')+'" data-model-id="'+escHtml(m.id)+'"><span class="model-item-name">'+escHtml(m.name)+'</span>'+price+'</div>';
+  }).join('');
+  const active = modelList.querySelector('.model-item.active');
+  if (active) active.scrollIntoView({block:'nearest'});
+}
+modelList.addEventListener('click', async e => {
+  const item = e.target.closest('.model-item'); if (!item) return;
+  const nm = item.dataset.modelId;
+  if (nm === currentModel) { modelPicker.classList.remove('open'); return; }
+  currentModel = nm; updateTopbarModel(); modelPicker.classList.remove('open');
+  try { await fetch('/api/model', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({model:nm})}); loadModelInfo(); } catch(e) { console.error(e); }
 });
 
-// ── New Session ────────────────────────────────────────────
-clearBtn.addEventListener('click', async () => {
-  await fetch('/api/clear', {method: 'POST'});
-  messagesEl.innerHTML = '';
-  clearDevPanel();
-  userInput.focus();
-});
+// Model Info
+async function loadModelInfo() {
+  try { const res = await fetch('/api/model/info'); if (res.ok) { modelMeta = await res.json(); if (lastDebug) renderSession(lastDebug.session, lastDebug.usage); } } catch(e) {}
+}
 
-// ── Auto-resize textarea ───────────────────────────────────
-userInput.addEventListener('input', () => {
-  userInput.style.height = 'auto';
-  userInput.style.height = Math.min(userInput.scrollHeight, 160) + 'px';
-});
+// Logout & New Session
+logoutBtn.addEventListener('click', async () => { await fetch('/api/logout',{method:'POST'}); location.reload(); });
+clearBtn.addEventListener('click', async () => { await fetch('/api/clear',{method:'POST'}); messagesEl.innerHTML=''; lastDebug=null; clearDevPanel(); topbarTokens.innerHTML=''; userInput.focus(); });
 
-userInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
+// Auto-resize textarea
+userInput.addEventListener('input', () => { userInput.style.height='auto'; userInput.style.height=Math.min(userInput.scrollHeight,160)+'px'; });
+userInput.addEventListener('keydown', e => { if (e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
 sendBtn.addEventListener('click', sendMessage);
-
-// ── Send ───────────────────────────────────────────────────
+// Send
 async function sendMessage() {
-  const text = userInput.value.trim();
-  if (!text) return;
-
-  appendMessage('user', text);
-  userInput.value = '';
-  userInput.style.height = 'auto';
-  sendBtn.disabled = true;
-
+  const text = userInput.value.trim(); if (!text) return;
+  appendMessage('user', text); userInput.value=''; userInput.style.height='auto'; sendBtn.disabled=true;
   const thinking = appendThinking();
-
   try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message: text})
-    });
-
+    const res = await fetch('/api/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:text})});
     thinking.remove();
-
-    if (res.status === 401) {
-      loginScreen.classList.remove('hidden');
-      app.classList.remove('visible');
-      return;
-    }
-
+    if (res.status===401) { loginScreen.classList.remove('hidden'); app.classList.remove('visible'); return; }
     const data = await res.json();
-
-    if (data.error) {
-      appendMessage('assistant', `[error] ${data.error}`);
-    } else {
-      appendMessage('assistant', data.response);
-      lastDebug = data.debug;
-      renderDebug(data.debug);
-      if (data.debug?.session?.model) {
-        topbarModel.textContent = data.debug.session.model;
-      }
-    }
-  } catch(e) {
-    thinking.remove();
-    appendMessage('assistant', `[network error] ${e.message}`);
-  }
-
-  sendBtn.disabled = false;
-  userInput.focus();
+    if (data.error) { appendMessage('assistant','[error] '+data.error); }
+    else { appendMessage('assistant',data.response); lastDebug=data.debug; renderDebug(data.debug);
+      if(data.debug?.session?.model){currentModel=data.debug.session.model;updateTopbarModel();}
+      updateTopbarTokens(data.debug?.usage); }
+  } catch(e) { thinking.remove(); appendMessage('assistant','[network error] '+e.message); }
+  sendBtn.disabled=false; userInput.focus();
 }
 
-// ── Messages ───────────────────────────────────────────────
+function updateTopbarTokens(u) {
+  if (!u||!u.session) { topbarTokens.innerHTML=''; return; }
+  topbarTokens.innerHTML = 'tokens: <span>'+fmtNum(u.session.total_tokens)+'</span> · turns: <span>'+u.session.turn_count+'</span>';
+}
 function appendMessage(role, content) {
-  const el = document.createElement('div');
-  el.className = `message ${role}`;
-  el.innerHTML = `
-    <div class="message-role">${role === 'user' ? 'you' : 'q7x'}</div>
-    <div class="message-content">${escHtml(content)}</div>
-  `;
-  messagesEl.appendChild(el);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return el;
+  const el = document.createElement('div'); el.className='message '+role;
+  el.innerHTML='<div class="message-role">'+(role==='user'?'you':'q7x')+'</div><div class="message-content">'+escHtml(content)+'</div>';
+  messagesEl.appendChild(el); messagesEl.scrollTop=messagesEl.scrollHeight; return el;
 }
-
 function appendThinking() {
-  const el = document.createElement('div');
-  el.className = 'message assistant';
-  el.innerHTML = `
-    <div class="message-role">q7x</div>
-    <div class="message-content thinking">
-      <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
-    </div>
-  `;
-  messagesEl.appendChild(el);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  return el;
+  const el = document.createElement('div'); el.className='message assistant';
+  el.innerHTML='<div class="message-role">q7x</div><div class="message-content thinking"><span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span></div>';
+  messagesEl.appendChild(el); messagesEl.scrollTop=messagesEl.scrollHeight; return el;
 }
-
-// ── Dev Panel ──────────────────────────────────────────────
-document.querySelectorAll('.dev-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.dev-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
-  });
-});
-
+// Dev Panel
+document.querySelectorAll('.dev-tab').forEach(tab => { tab.addEventListener('click', () => {
+  document.querySelectorAll('.dev-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  tab.classList.add('active'); document.getElementById('tab-'+tab.dataset.tab).classList.add('active');
+}); });
 function clearDevPanel() {
-  document.getElementById('tab-steeltrap').innerHTML = '<div class="dev-empty">Send a message to see Steeltrap queries.</div>';
-  document.getElementById('tab-payload').innerHTML = '<div class="dev-empty">Send a message to inspect the LLM payload.</div>';
-  document.getElementById('tab-session').innerHTML = '<div class="dev-empty">Send a message to see session state.</div>';
+  document.getElementById('tab-steeltrap').innerHTML='<div class="dev-empty">Send a message to see Steeltrap queries.</div>';
+  document.getElementById('tab-payload').innerHTML='<div class="dev-empty">Send a message to inspect the LLM payload.</div>';
+  document.getElementById('tab-session').innerHTML='<div class="dev-empty">Send a message to see session state.</div>';
 }
-
-function renderDebug(debug) {
-  renderSteeltrap(debug.steeltrap);
-  renderPayload(debug.payload);
-  renderSession(debug.session);
-}
+function renderDebug(d) { renderSteeltrap(d.steeltrap); renderPayload(d.payload,d.usage); renderSession(d.session,d.usage); }
 
 function renderSteeltrap(st) {
   const el = document.getElementById('tab-steeltrap');
-  if (!st) {
-    el.innerHTML = '<div class="dev-empty">Steeltrap disabled or no query made.</div>';
-    return;
-  }
-
-  let html = '';
-
-  html += `<div class="dev-section">
-    <div class="dev-section-label">Query</div>
-    <div class="dev-code neutral">${escHtml(st.url || st.query || '—')}</div>
-  </div>`;
-
-  if (st.error) {
-    html += `<div class="dev-section">
-      <div class="dev-section-label">Error</div>
-      <div class="dev-code warn">${escHtml(st.error)}</div>
-    </div>`;
-  } else if (st.result && st.result.length > 0) {
-    html += `<div class="dev-section">
-      <div class="dev-section-label">Injected Context</div>
-      <div class="dev-code">${escHtml(st.result[0].content)}</div>
-    </div>`;
-  } else {
-    html += `<div class="dev-section">
-      <div class="dev-section-label">Result</div>
-      <div class="dev-code neutral">No matching context found.</div>
-    </div>`;
-  }
-
-  el.innerHTML = html;
+  if (!st) { el.innerHTML='<div class="dev-empty">Steeltrap disabled or no query made.</div>'; return; }
+  let h='<div class="dev-section"><div class="dev-section-label">Query</div><div class="dev-code neutral">'+escHtml(st.url||st.query||'—')+'</div></div>';
+  if (st.error) h+='<div class="dev-section"><div class="dev-section-label">Error</div><div class="dev-code warn">'+escHtml(st.error)+'</div></div>';
+  else if (st.result&&st.result.length>0) h+='<div class="dev-section"><div class="dev-section-label">Injected Context</div><div class="dev-code">'+escHtml(st.result[0].content)+'</div></div>';
+  else h+='<div class="dev-section"><div class="dev-section-label">Result</div><div class="dev-code neutral">No matching context found.</div></div>';
+  el.innerHTML=h;
 }
 
-function renderPayload(payload) {
+function renderPayload(payload,usage) {
   const el = document.getElementById('tab-payload');
-  if (!payload || !payload.length) {
-    el.innerHTML = '<div class="dev-empty">No payload data.</div>';
-    return;
-  }
-
-  let html = `<div class="dev-section-label" style="margin-bottom:12px">${payload.length} message(s) sent to LLM</div>`;
-
-  for (const msg of payload) {
-    html += `<div class="payload-msg role-${msg.role}">
-      <div class="payload-role">${msg.role}</div>
-      <div class="payload-text">${escHtml(msg.content)}</div>
-    </div>`;
-  }
-
-  el.innerHTML = html;
+  if (!payload||!payload.length) { el.innerHTML='<div class="dev-empty">No payload data.</div>'; return; }
+  let h='<div class="dev-section-label" style="margin-bottom:12px">'+payload.length+' message(s) sent to LLM</div>';
+  for (const msg of payload) h+='<div class="payload-msg role-'+msg.role+'"><div class="payload-role">'+msg.role+'</div><div class="payload-text">'+escHtml(msg.content)+'</div></div>';
+  if (usage&&usage.turn) { const t=usage.turn; h+='<div class="payload-footer"><div class="payload-stat">prompt: <span>'+fmtNum(t.prompt_tokens)+'</span></div><div class="payload-stat">completion: <span>'+fmtNum(t.completion_tokens)+'</span></div><div class="payload-stat">total: <span>'+fmtNum(t.total_tokens)+'</span></div><div class="payload-stat">latency: <span>'+fmtNum(t.latency_ms)+'ms</span></div></div>'; }
+  el.innerHTML=h;
 }
-
-function renderSession(sess) {
+function renderSession(sess,usage) {
   const el = document.getElementById('tab-session');
-  if (!sess) {
-    el.innerHTML = '<div class="dev-empty">No session data.</div>';
-    return;
+  if (!sess) { el.innerHTML='<div class="dev-empty">Send a message to see session state.</div>'; return; }
+  let h='<div class="dev-section"><div class="dev-section-label">Session</div><div class="session-grid">';
+  h+='<span class="session-key">session_id</span><span class="session-val">'+escHtml(sess.id)+'</span>';
+  h+='<span class="session-key">model</span><span class="session-val">'+escHtml(sess.model)+'</span>';
+  h+='<span class="session-key">messages</span><span class="session-val">'+sess.message_count+'</span>';
+  h+='<span class="session-key">log</span><span class="session-val">'+escHtml(sess.log)+'</span>';
+  h+='<span class="session-key">created</span><span class="session-val">'+(sess.created_at?fmtTime(sess.created_at):'—')+'</span>';
+  h+='<span class="session-key">updated</span><span class="session-val">'+(sess.updated_at?fmtTime(sess.updated_at):'—')+'</span>';
+  h+='</div></div>';
+
+  if (usage) {
+    const t=usage.turn||{}, s=usage.session||{};
+    h+='<div class="dev-section"><div class="dev-section-label">Usage — This Turn</div><div class="usage-grid">';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Prompt</span><span class="usage-stat-val">'+fmtNum(t.prompt_tokens||0)+'</span></div>';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Completion</span><span class="usage-stat-val">'+fmtNum(t.completion_tokens||0)+'</span></div>';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Latency</span><span class="usage-stat-val">'+fmtNum(t.latency_ms||0)+'<span class="usage-stat-sub">ms</span></span></div>';
+    h+='</div></div>';
+    h+='<div class="dev-section"><div class="dev-section-label">Usage — Session Total</div><div class="usage-grid">';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Total Tokens</span><span class="usage-stat-val">'+fmtNum(s.total_tokens||0)+'</span></div>';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Prompt</span><span class="usage-stat-val">'+fmtNum(s.total_prompt_tokens||0)+'</span></div>';
+    h+='<div class="usage-stat"><span class="usage-stat-label">Completion</span><span class="usage-stat-val">'+fmtNum(s.total_completion_tokens||0)+'</span></div>';
+    h+='</div></div>';
+    if (t.generation_id) { h+='<div class="dev-section"><div class="dev-section-label">Generation</div><div class="session-grid"><span class="session-key">id</span><span class="session-val">'+escHtml(t.generation_id)+'</span><span class="session-key">turns</span><span class="session-val">'+(s.turn_count||0)+'</span></div></div>'; }
   }
-
-  el.innerHTML = `<div class="session-grid">
-    <span class="session-key">session_id</span>
-    <span class="session-val">${escHtml(sess.id)}</span>
-    <span class="session-key">model</span>
-    <span class="session-val">${escHtml(sess.model)}</span>
-    <span class="session-key">messages</span>
-    <span class="session-val">${sess.message_count}</span>
-    <span class="session-key">log</span>
-    <span class="session-val">${escHtml(sess.log)}</span>
-  </div>`;
+  // Model card
+  if (modelMeta) {
+    const ep=modelMeta.endpoints||{}, meta=modelMeta.meta||{}, pricing=meta.pricing||{};
+    const pp=parseFloat(pricing.prompt||'0'), cp=parseFloat(pricing.completion||'0'), isFree=pp===0&&cp===0;
+    const tp=meta.top_provider||{}, arch=ep.architecture||{};
+    h+='<div class="model-card"><div class="model-card-header"><div>';
+    h+='<div class="model-card-name">'+escHtml(ep.name||meta.name||currentModel)+'</div>';
+    h+='<div class="model-card-id">'+escHtml(modelMeta.model_id||'')+'</div></div></div>';
+    h+='<div class="model-card-stats">';
+    h+='<div class="model-stat"><span class="model-stat-label">Context</span><span class="model-stat-val">'+fmtCtx(meta.context_length)+'</span></div>';
+    h+='<div class="model-stat"><span class="model-stat-label">Max Output</span><span class="model-stat-val">'+(tp.max_completion_tokens?fmtCtx(tp.max_completion_tokens):fmtCtx(meta.context_length))+'</span></div>';
+    h+='<div class="model-stat"><span class="model-stat-label">Input Price</span><span class="model-stat-val'+(isFree?' free':'')+'">'+(isFree?'FREE':'$'+(pp*1000000).toFixed(2)+'/M')+'</span></div>';
+    h+='<div class="model-stat"><span class="model-stat-label">Output Price</span><span class="model-stat-val'+(isFree?' free':'')+'">'+(isFree?'FREE':'$'+(cp*1000000).toFixed(2)+'/M')+'</span></div>';
+    h+='</div>';
+    if (arch.modality) { h+='<div class="model-card-stats" style="margin-top:8px"><div class="model-stat"><span class="model-stat-label">Modality</span><span class="model-stat-val" style="font-size:11px">'+escHtml(arch.modality)+'</span></div><div class="model-stat"><span class="model-stat-label">Tokenizer</span><span class="model-stat-val" style="font-size:11px">'+escHtml(arch.tokenizer||'—')+'</span></div></div>'; }
+    if (ep.description) { h+='<div class="model-card-desc">'+escHtml(ep.description.substring(0,200))+(ep.description.length>200?'...':'')+'</div>'; }
+    h+='</div>';
+  }
+  el.innerHTML=h;
 }
 
-// ── Utils ──────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
+// Utils
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmtNum(n){if(n===undefined||n===null)return'—';return Number(n).toLocaleString();}
+function fmtCtx(n){if(!n)return'—';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return Math.round(n/1000)+'K';return String(n);}
+function fmtTime(iso){try{return new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit'});}catch(e){return iso;}}
 </script>
 </body>
 </html>

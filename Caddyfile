@@ -16,11 +16,10 @@ www.q7x.ai {
 
 chat.q7x.ai {
     encode gzip
-
     tls internal
 
     handle /api/* {
-        reverse_proxy api:8000
+        reverse_proxy 172.18.0.1:8000
     }
 
     handle {
