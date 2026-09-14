@@ -65,3 +65,18 @@ Verify live page/assets, tokenless API 401 and authorized API read 200. Chrome Q
 must check participant selection, draft preparation, reload restoration, changes
 requiring an updated draft, disabled run controls, and mobile rendering. Leave
 Q7C-733 open if required visual verification is blocked; never close Q7C-732 with it.
+
+## Completed finishing pass — 2026-09-14 UTC
+
+Q7C-733 is Done. Source 338a87c is published at https://q7x.ai/discussions/ in
+release 20260914-q7c733-2; previous release retained. Local and host Node 22 suites
+both passed 18/18 checks, no failures/skips. All eight HTTPS assets match source;
+API anonymous 401 / authorized read 200; seven existing services active.
+
+External Chrome capture recovered. Live desktop and 390 × 676 mobile simulation
+were inspected: question/selection validation and focus, Select all, keyboard
+prepare, actual copied text via paste, edits/copy gating, reload/update, disabled
+run controls, and mobile page sections. No physical-phone/VoiceOver or deliberately
+forced storage/clipboard failure testing is claimed. Independent accessibility
+review findings were corrected. See ../../docs/checkpoints/Q7C-733.md for exact
+outputs, ownership and Mac Mini next steps. Parent Q7C-732 stays in Backlog.
