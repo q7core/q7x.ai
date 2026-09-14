@@ -4,6 +4,11 @@ Public page: `/discussions/`. The existing homepage gets one discoverable link.
 The Node service serves only explicitly named assets in workspace.mjs; no
 credentials or message reads are exposed. Browser drafts remain in localStorage
 (`q7x.discussion-draft.v1`), are labeled local, and are never sent to the server.
+Select all chooses the five participants without clearing any draft. Cmd/Ctrl+Enter
+prepares the current input. Missing questions or participants receive focused
+validation. Edits leave the previous note visible and disable copying until it is
+updated; undoing those edits restores copying. Copy prepared note copies only the
+opening message text, with a manual selection fallback if clipboard access fails.
 No build step or new dependencies. `npm test` checks existing API behavior, static
 allowlisting, outgoing message compatibility and placeholder boundaries.
 

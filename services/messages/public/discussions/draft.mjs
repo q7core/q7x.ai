@@ -18,3 +18,9 @@ export function prepareDraft(value) {
   if(text.includes('\0') || new TextEncoder().encode(text).length>16384) throw new Error('Your draft contains unsupported text or is too long.');
   return {participantIds:draft.participantIds,message:{sender:config.sender,channel:config.channel,text}};
 }
+export function draftsMatch(current,prepared) {
+  if(!prepared) return false;
+  const a=normalizeDraft(current), b=normalizeDraft(prepared);
+  return a.topic===b.topic && a.perspective===b.perspective &&
+    a.participantIds.length===b.participantIds.length && a.participantIds.every(id=>b.participantIds.includes(id));
+}

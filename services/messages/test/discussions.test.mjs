@@ -1,6 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {prepareDraft, normalizeDraft} from '../public/discussions/draft.mjs';
+import {readFileSync} from 'node:fs';
+import {prepareDraft, normalizeDraft, draftsMatch} from '../public/discussions/draft.mjs';
 import {clientDefinitions, getClientStatus, receiveMessage} from '../public/discussions/clients.mjs';
 
 test('opening draft uses the existing outgoing message fields without invented IDs',()=>{
@@ -29,5 +30,28 @@ test('all five clients honestly report unavailable capabilities and cannot deliv
     assert.equal(getClientStatus(client.id).state,'not_connected');
     assert.equal(getClientStatus(client.id).capabilities.receiveMessage,false);
     await assert.rejects(receiveMessage(client.id,{id:'1',sender:'rick',channel:'general',text:'hi',created_at:'2026-09-14T00:00:00Z'}),/not connected/);
+  }
+});
+test('prepared notes become stale for text or participant edits, and recover when edits are undone',()=>{
+  const prepared={topic:'Question?',perspective:'Context',participantIds:['codex','hermes']};
+  assert.equal(draftsMatch(prepared,null),false);
+  assert.equal(draftsMatch({...prepared,topic:'Changed?'},prepared),false);
+  assert.equal(draftsMatch({...prepared,perspective:''},prepared),false);
+  assert.equal(draftsMatch({...prepared,participantIds:[]},prepared),false);
+  assert.equal(draftsMatch(JSON.parse(JSON.stringify(prepared)),prepared),true);
+});
+test('participant order does not mark a restored note stale or mutate saved state',()=>{
+  const prepared={topic:'Question?',perspective:'',participantIds:['hermes','codex']};
+  assert.equal(draftsMatch({...prepared,participantIds:['codex','hermes']},prepared),true);
+  assert.deepEqual(prepared.participantIds,['hermes','codex']);
+});
+test('every scripted control and accessible description exists in the shipped HTML',()=>{
+  const html=readFileSync(new URL('../public/discussions/index.html',import.meta.url),'utf8');
+  const app=readFileSync(new URL('../public/discussions/app.mjs',import.meta.url),'utf8');
+  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(match=>match[1]);
+  assert.equal(new Set(ids).size,ids.length,'HTML IDs must be unique');
+  for(const [,id] of app.matchAll(/\$\('([^']+)'\)/g)) assert.ok(ids.includes(id),`Missing scripted control: ${id}`);
+  for(const [,references] of html.matchAll(/aria-(?:describedby|labelledby)="([^"]+)"/g)){
+    for(const id of references.split(/\s+/)) assert.ok(ids.includes(id),`Missing accessible description: ${id}`);
   }
 });

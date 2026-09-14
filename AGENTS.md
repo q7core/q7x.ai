@@ -13,3 +13,8 @@ scope and execution; do not add routine approval checkpoints.
 
 For the shared message API, read `services/messages/OPERATIONS.md` before changing
 the schema or deploying. Keep unrelated services and business schemas untouched.
+
+From the repository root, run message-service checks with
+`npm --prefix services/messages test` (the root package has no test script).
+Use an explicit working directory for file edits, and run `git diff --check`
+separately so a later successful command cannot hide a failed check.

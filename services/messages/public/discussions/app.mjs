@@ -1,5 +1,5 @@
 import {clientDefinitions,getClientStatus} from './clients.mjs';
-import {normalizeDraft,prepareDraft} from './draft.mjs';
+import {normalizeDraft,prepareDraft,draftsMatch} from './draft.mjs';
 import {config} from './config.mjs';
 
 const $=id=>document.getElementById(id);
@@ -32,9 +32,13 @@ $('topic').value=initial.topic;$('perspective').value=initial.perspective;
 $('api-link').href=config.messageApiBase.replace(/\/$/,'')+'/docs';
 const read=()=>({topic:$('topic').value,perspective:$('perspective').value,participantIds:[...list.querySelectorAll('input:checked')].map(input=>input.value)});
 function updateSelection(){
-  const count=read().participantIds.length;
+  const current=read(), count=current.participantIds.length;
+  const stale=prepared && !draftsMatch(current,prepared);
   $('selection-count').textContent=`${count} selected`;
-  $('draft-change-note').hidden=!prepared || JSON.stringify(read())===JSON.stringify(prepared);
+  $('select-all').disabled=count===clientDefinitions.length;
+  $('draft-change-note').hidden=!stale;
+  $('copy-note').disabled=!prepared || !!stale;
+  $('conversation-status').textContent=!prepared?'Not started':stale?'Edits not prepared':'Draft · Not sent';
 }
 function save(){
   try {localStorage.setItem(storageKey,JSON.stringify({...read(),prepared}));storageAvailable=true;}
@@ -51,17 +55,48 @@ function showPrepared(){
   $('prepare-button').firstChild.textContent='Update draft ';
   updateSelection();
 }
-function changed(){updateSelection();$('form-error').hidden=true;save();}
+function clearError(){
+  $('form-error').hidden=true;$('form-error').textContent='';
+  for(const element of [$('topic'),$('perspective'),$('participant-fieldset')]) element.removeAttribute('aria-invalid');
+}
+function changed(){updateSelection();clearError();$('copy-status').textContent='';save();}
 list.addEventListener('change',changed);
+$('select-all').addEventListener('click',()=>{
+  for(const input of list.querySelectorAll('input')) input.checked=true;
+  changed();
+});
 $('topic').addEventListener('input',changed);$('perspective').addEventListener('input',changed);
+$('draft-form').addEventListener('keydown',event=>{
+  if(event.key==='Enter' && (event.metaKey || event.ctrlKey) && !event.isComposing){
+    event.preventDefault();$('draft-form').requestSubmit();
+  }
+});
 $('draft-form').addEventListener('submit',event=>{
   event.preventDefault();
   try{
     const current=read();prepareDraft(current);prepared=current;
-    $('form-error').hidden=true;showPrepared();save();
+    clearError();$('copy-status').textContent='';showPrepared();save();
     $('conversation-title').setAttribute('tabindex','-1');$('conversation-title').focus({preventScroll:true});
     if(matchMedia('(max-width:760px)').matches) $('conversation-title').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth',block:'start'});
-  }catch(error){$('form-error').textContent=error.message;$('form-error').hidden=false;}
+  }catch(error){
+    const current=read();
+    const target=!current.topic.trim()?$('topic'):!current.participantIds.length?$('participant-fieldset'):current.topic.includes('\0')?$('topic'):$('perspective');
+    target.setAttribute('aria-invalid','true');
+    $('form-error').textContent=error.message;$('form-error').hidden=false;
+    (target===$('participant-fieldset')?list.querySelector('input'):target).focus();
+  }
+});
+$('copy-note').addEventListener('click',async()=>{
+  if(!prepared || !draftsMatch(read(),prepared)) return;
+  const text=prepareDraft(prepared).message.text;
+  try{
+    await navigator.clipboard.writeText(text);
+    $('copy-status').textContent='Prepared note copied. Nothing was sent to agents.';
+  }catch{
+    const range=document.createRange();range.selectNodeContents($('preview-text'));
+    const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+    $('copy-status').textContent='Automatic copy is unavailable. The note is selected; use your browser’s Copy command.';
+  }
 });
 updateSelection();showPrepared();
 if(!storageAvailable) $('storage-status').textContent='Browser storage is unavailable. Your draft lasts while this page stays open.';

@@ -25,30 +25,30 @@
 
     <section class="participants" aria-labelledby="participants-title">
       <div class="section-heading"><div><span class="step-number">01</span><h2 id="participants-title">Choose your participants</h2></div><span id="selection-count" class="detail" aria-live="polite">0 selected</span></div>
-      <p class="section-description" id="participant-help">Pick any combination. You can change the lineup before you start.</p>
-      <fieldset aria-describedby="participant-help"><legend class="sr-only">Discussion participants</legend><div id="participant-list" class="participant-grid"></div></fieldset>
+      <div class="participant-tools"><p class="section-description" id="participant-help">Pick any combination. You can change the lineup before you start.</p><button id="select-all" class="secondary-button" type="button">Select all</button></div>
+      <fieldset id="participant-fieldset" aria-describedby="participant-help form-error"><legend class="sr-only">Discussion participants</legend><div id="participant-list" class="participant-grid"></div></fieldset>
     </section>
 
     <div class="workspace-grid">
       <section id="composer" class="composer" aria-labelledby="composer-title">
         <div class="section-heading"><div><span class="step-number">02</span><h2 id="composer-title">Set the conversation</h2></div></div>
-        <form id="draft-form">
+        <form id="draft-form" novalidate>
           <label for="topic">What would you like to discuss?</label>
-          <textarea id="topic" name="topic" rows="3" maxlength="1600" required placeholder="What’s the best way to approach…?" aria-describedby="topic-help"></textarea>
+          <textarea id="topic" name="topic" rows="3" maxlength="1600" required placeholder="What’s the best way to approach…?" aria-describedby="topic-help form-error"></textarea>
           <p class="field-help" id="topic-help">A decision, an idea, or a question worth another perspective.</p>
           <div class="label-row"><label for="perspective">Your point of view</label><span class="detail">Optional</span></div>
-          <textarea id="perspective" name="perspective" rows="4" maxlength="2000" placeholder="Here’s what I’m thinking, and why…"></textarea>
+          <textarea id="perspective" name="perspective" aria-describedby="form-error" rows="4" maxlength="2000" placeholder="Here’s what I’m thinking, and why…"></textarea>
           <p class="field-help">Give the group your context, assumptions, or preferred direction.</p>
           <p id="form-error" class="form-error" role="alert" hidden></p>
-          <div class="prepare-row"><button class="primary-button" id="prepare-button" type="submit">Prepare draft <span aria-hidden="true">↗</span></button><p>Nothing is sent to agents.</p></div>
+          <div class="prepare-row"><button class="primary-button" id="prepare-button" type="submit">Prepare draft <span aria-hidden="true">↗</span></button><p>Nothing is sent to agents.<br><span class="keyboard-hint">⌘ / Ctrl + Enter to prepare</span></p></div>
           <p id="storage-status" class="storage-status" role="status">Your draft stays in this browser.</p>
         </form>
       </section>
 
       <section class="conversation" aria-labelledby="conversation-title">
-        <div class="conversation-top"><h2 id="conversation-title">Conversation</h2><span id="conversation-status" class="small-tag">Not started</span></div>
+        <div class="conversation-top"><h2 id="conversation-title">Conversation</h2><span id="conversation-status" class="small-tag" role="status">Not started</span></div>
         <div id="empty-conversation" class="empty-conversation"><svg viewBox="0 0 56 56" aria-hidden="true"><path d="M9 11h30v23H23l-9 7v-7H9zM23 41h13l7 6v-6h5V21h-4"/></svg><h3>Every good discussion<br>starts with a question.</h3><p>Your opening note will appear here.<br>The agents will join once connected.</p></div>
-        <article id="draft-preview" class="draft-preview" hidden><div class="note-heading"><span class="avatar">R</span><div><strong>You</strong><span>Opening note · Not sent</span></div></div><p id="preview-text"></p><div class="invited"><span>Selected participants</span><p id="preview-participants"></p></div><p id="draft-change-note" class="draft-change-note" hidden>You've made changes. Prepare the draft again to update this note.</p></article>
+        <article id="draft-preview" class="draft-preview" hidden><div class="note-heading"><span class="avatar">R</span><div><strong>You</strong><span>Opening note · Not sent</span></div></div><p id="preview-text"></p><div class="invited"><span>Selected participants</span><p id="preview-participants"></p></div><p id="draft-change-note" class="draft-change-note" hidden>You've made changes. Update the draft to include them before copying.</p><div class="copy-row"><button id="copy-note" class="secondary-button" type="button" disabled aria-describedby="copy-status">Copy prepared note</button><p id="copy-status" role="status"></p></div></article>
         <div class="run-controls"><div class="button-row"><button type="button" disabled aria-describedby="connection-note"><span aria-hidden="true">▷</span> Start discussion</button><button type="button" disabled aria-describedby="connection-note">Pause</button><button type="button" disabled aria-describedby="connection-note">Stop</button></div><p id="connection-note">Run controls become available when agents are connected.</p></div>
       </section>
     </div>
