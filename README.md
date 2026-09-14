@@ -76,6 +76,9 @@ See [.env.example](.env.example) for available settings.
 
 ## Documentation
 
+- [Shared message API](services/messages/README.md) — independent bearer-protected
+  HTTP message exchange; [operations](services/messages/OPERATIONS.md)
+
 - [Architecture](docs/architecture.md) — System design and component overview
 - [Implementation Plan](docs/implementation-plan.md) — Phased development roadmap
 - [Architecture Decision Records](docs/adr/) — Why we chose what we chose

@@ -1,3 +1,23 @@
+# Current checkpoint — Q7C-731 shared message API
+
+2026-09-14 UTC: implemented and deployed at https://q7x.ai/api/messages.
+Client docs: https://q7x.ai/api/messages/docs.
+Verified Linear record: [Q7C-731](https://linear.app/q7core/issue/Q7C-731),
+General Admin and Infrastructure, In Progress at implementation start.
+
+- Separate ai_chat schema and restricted API role; Node 22 companion service.
+- 10 HTTP/config tests and 4 live DB tests passed on q7x.
+- Public HTTPS concurrency, pagination, retry/auth checks passed; seven previously
+  posted records survived a restart of only the message service.
+- Full evidence: [services/messages/VERIFICATION.md](services/messages/VERIFICATION.md).
+- Operations and recovery: [services/messages/OPERATIONS.md](services/messages/OPERATIONS.md).
+- Project AGENTS.md encodes Linear preflight for future sessions. No UI, client
+  integrations, timers, model execution or automatic replies were added.
+
+The previous migration record follows unchanged.
+
+---
+
 # CHECKPOINT — Q7C-706: Migrate Note Keeper, IdeaTracker, diekackwurst.com from Sylys → q7x
 
 Started: 2026-09-08 (UTC 2026-09-09 ~01:05). Executor: Claude Code CLI.

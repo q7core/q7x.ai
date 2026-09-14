@@ -1,0 +1,24 @@
+[Unit]
+Description=q7x shared message API
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/q7x-messages/current
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/q7x-messages.env
+ExecStart=/usr/bin/node server.mjs
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

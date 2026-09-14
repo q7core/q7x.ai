@@ -1,0 +1,52 @@
+// Manual release verification only. Never schedules polling or calls a model.
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+const base = process.env.MESSAGES_URL;
+const token = process.env.MESSAGES_TOKEN;
+assert.ok(base && token, 'MESSAGES_URL and MESSAGES_TOKEN required');
+const channel = `release-check-${randomUUID()}`;
+const headers = {Authorization:`Bearer ${token}`,'Content-Type':'application/json'};
+const get = (query, override={}) => fetch(base+query,{headers:{...headers,...override}});
+const post = (text,key,override={}) => fetch(base,{method:'POST',headers:{...headers,'Idempotency-Key':key,...override},body:JSON.stringify({sender:'deployment-check',channel,text})});
+const ids=[];
+const key=randomUUID();
+const first=await post('Message API deployment verification',key);
+assert.equal(first.status,200);
+const firstMessage=(await first.json()).message;
+assert.equal(firstMessage.sender,'deployment-check');
+assert.equal(firstMessage.channel,channel);
+assert.ok(!Number.isNaN(Date.parse(firstMessage.created_at)));
+ids.push(firstMessage.id);
+const retry=await post('Message API deployment verification',key);
+assert.equal(retry.status,200);
+assert.equal((await retry.json()).message.id,ids[0]);
+assert.equal((await post('conflicting payload',key)).status,409);
+const responses=await Promise.all(Array.from({length:6},(_,i)=>post(`Concurrent verification ${i}`,randomUUID())));
+for (const response of responses) { assert.equal(response.status,200); ids.push((await response.json()).message.id); }
+const seen=[];
+let cursor='0';
+for(let i=0;i<10;i++) {
+  const response=await get(`?channel=${channel}&after=${cursor}&limit=2`);
+  assert.equal(response.status,200);
+  const page=await response.json();
+  seen.push(...page.messages.map(x=>x.id));
+  cursor=page.next_after;
+  if(!page.has_more) break;
+}
+assert.deepEqual(seen,[...ids].sort((a,b)=>BigInt(a)<BigInt(b)?-1:1));
+const latest=await (await get(`?channel=${channel}&limit=2`)).json();
+assert.deepEqual(latest.messages.map(x=>x.id),seen.slice(-2));
+assert.equal(latest.has_more,true);
+const older=await (await get(`?channel=${channel}&before=${latest.next_before}&limit=2`)).json();
+assert.deepEqual(older.messages.map(x=>x.id),seen.slice(-4,-2));
+const empty=await (await get(`?channel=${channel}&after=${cursor}`)).json();
+assert.equal(empty.messages.length,0);
+assert.equal(empty.next_after,cursor);
+assert.equal((await get('',{Authorization:''})).status,401);
+assert.equal((await post('unauthorized',randomUUID(),{Authorization:'Bearer incorrect'})).status,401);
+assert.equal((await get('?limit=101')).status,400);
+const docs=await fetch(base+'/docs');
+assert.equal(docs.status,200);
+assert.ok((await docs.text()).includes('Idempotency-Key'));
+console.log('PASS HTTPS: post, concurrent writes, retry replay/conflict, forward/latest/older pagination, empty bookmark, authentication, validation, public docs');
+console.log(JSON.stringify({channel,first_id:ids[0],last_id:cursor,message_count:seen.length}));
