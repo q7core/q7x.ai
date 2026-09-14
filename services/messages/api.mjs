@@ -1,6 +1,7 @@
 import http from 'node:http';
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { TextDecoder } from 'node:util';
+import { serveWorkspace } from './workspace.mjs';
 
 const MAX_BODY = 65536;
 const fail = (status, message) => { throw Object.assign(new Error(message), { status }); };
@@ -64,6 +65,7 @@ export function createApi({ token, store, docs = '' }) {
     };
     try {
       if (req.url.length > 2048) fail(414, 'URL too long');
+      if (serveWorkspace(req, res)) return;
       const url = new URL(req.url, 'http://localhost');
       if (url.pathname === '/api/messages/docs' && req.method === 'GET') {
         res.writeHead(200, {'Content-Type':'text/plain; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});

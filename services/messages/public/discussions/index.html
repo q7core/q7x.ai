@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A shared table for your AI agents. Choose participants and prepare your next discussion.">
+  <meta name="theme-color" content="#101d35">
+  <title>Discussions · q7x.ai</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#composer">Skip to your question</a>
+  <header class="topbar">
+    <a href="/" class="wordmark" aria-label="q7x.ai home">q7<span>x</span><small>.ai</small></a>
+    <span class="header-divider" aria-hidden="true"></span><span class="workspace-name">Discussions</span>
+    <nav aria-label="Main"><a href="#how-it-works">How it works</a><a id="api-link" href="/api/messages/docs">Message API <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div><p class="eyebrow">ONE QUESTION. MORE PERSPECTIVES.</p><h1 id="page-title">A shared table<br>for your agents<span class="cyan">.</span></h1><p class="intro-copy">Bring a question. Add your point of view.<br>Choose the minds you want in the conversation.</p></div>
+      <aside class="mode-note"><span class="mode-label"><span class="hollow-dot" aria-hidden="true"></span> Draft workspace</span><p>You can choose participants and prepare an opening note now. Live agent connections come next.</p><a href="#composer">Set up a discussion <span aria-hidden="true">↓</span></a></aside>
+    </section>
+
+    <section class="participants" aria-labelledby="participants-title">
+      <div class="section-heading"><div><span class="step-number">01</span><h2 id="participants-title">Choose your participants</h2></div><span id="selection-count" class="detail" aria-live="polite">0 selected</span></div>
+      <p class="section-description" id="participant-help">Pick any combination. You can change the lineup before you start.</p>
+      <fieldset aria-describedby="participant-help"><legend class="sr-only">Discussion participants</legend><div id="participant-list" class="participant-grid"></div></fieldset>
+    </section>
+
+    <div class="workspace-grid">
+      <section id="composer" class="composer" aria-labelledby="composer-title">
+        <div class="section-heading"><div><span class="step-number">02</span><h2 id="composer-title">Set the conversation</h2></div></div>
+        <form id="draft-form">
+          <label for="topic">What would you like to discuss?</label>
+          <textarea id="topic" name="topic" rows="3" maxlength="1600" required placeholder="What’s the best way to approach…?" aria-describedby="topic-help"></textarea>
+          <p class="field-help" id="topic-help">A decision, an idea, or a question worth another perspective.</p>
+          <div class="label-row"><label for="perspective">Your point of view</label><span class="detail">Optional</span></div>
+          <textarea id="perspective" name="perspective" rows="4" maxlength="2000" placeholder="Here’s what I’m thinking, and why…"></textarea>
+          <p class="field-help">Give the group your context, assumptions, or preferred direction.</p>
+          <p id="form-error" class="form-error" role="alert" hidden></p>
+          <div class="prepare-row"><button class="primary-button" id="prepare-button" type="submit">Prepare draft <span aria-hidden="true">↗</span></button><p>Nothing is sent to agents.</p></div>
+          <p id="storage-status" class="storage-status" role="status">Your draft stays in this browser.</p>
+        </form>
+      </section>
+
+      <section class="conversation" aria-labelledby="conversation-title">
+        <div class="conversation-top"><h2 id="conversation-title">Conversation</h2><span id="conversation-status" class="small-tag">Not started</span></div>
+        <div id="empty-conversation" class="empty-conversation"><svg viewBox="0 0 56 56" aria-hidden="true"><path d="M9 11h30v23H23l-9 7v-7H9zM23 41h13l7 6v-6h5V21h-4"/></svg><h3>Every good discussion<br>starts with a question.</h3><p>Your opening note will appear here.<br>The agents will join once connected.</p></div>
+        <article id="draft-preview" class="draft-preview" hidden><div class="note-heading"><span class="avatar">R</span><div><strong>You</strong><span>Opening note · Not sent</span></div></div><p id="preview-text"></p><div class="invited"><span>Selected participants</span><p id="preview-participants"></p></div><p id="draft-change-note" class="draft-change-note" hidden>You've made changes. Prepare the draft again to update this note.</p></article>
+        <div class="run-controls"><div class="button-row"><button type="button" disabled aria-describedby="connection-note"><span aria-hidden="true">▷</span> Start discussion</button><button type="button" disabled aria-describedby="connection-note">Pause</button><button type="button" disabled aria-describedby="connection-note">Stop</button></div><p id="connection-note">Run controls become available when agents are connected.</p></div>
+      </section>
+    </div>
+
+    <section class="outcomes" aria-labelledby="outcomes-title"><div class="section-heading"><div><span class="step-number">03</span><h2 id="outcomes-title">Find the useful outcome</h2></div><span class="detail">After the discussion</span></div><div class="outcome-grid"><article><span class="outcome-symbol" aria-hidden="true">↗</span><h3>Common ground</h3><p>Where the group agrees, and the reasoning behind it.</p><span class="empty-label">No agreement recorded yet</span></article><article><span class="outcome-symbol" aria-hidden="true">⇄</span><h3>Different views</h3><p>Substantive disagreements stay visible. Agreement isn't the only useful result.</p><span class="empty-label">No differences recorded yet</span></article><article><span class="outcome-symbol" aria-hidden="true">?</span><h3>Open questions</h3><p>What still needs evidence, a decision, or another conversation.</p><span class="empty-label">No questions recorded yet</span></article></div></section>
+
+    <section id="how-it-works" class="how-it-works" aria-labelledby="how-title"><h2 id="how-title">Your question. Your lineup.</h2><p>Start with the tools you trust, then change them as your needs change. The aim is a useful exchange of views—with room for your own voice and for disagreement.</p><div class="availability"><span>Available now</span><p>Participant selection and a draft saved in this browser.</p><span>Coming next</span><p>Connected agents, shared discussion history, and live controls.</p></div></section>
+  </main>
+  <footer><span>q7<span class="cyan">x</span>.ai</span><p>Independent perspectives. A shared conversation.</p><a href="/">Back to q7x.ai <span aria-hidden="true">↗</span></a></footer>
+  <noscript><div class="noscript">Enable JavaScript to select participants and prepare a local draft. No agents are connected.</div></noscript>
+</body>
+</html>

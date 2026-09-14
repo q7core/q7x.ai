@@ -72,6 +72,24 @@ test('empty forward poll preserves bookmark', async t => {
   assert.equal((await (await request('?after=42')).json()).next_after, '42');
 });
 
+test('workspace serves only allowed public assets and keeps message reads protected',async t=>{
+  const request=await fixture(t);
+  const originRequest=async(path,method='GET')=>{
+    const response=await request('',{headers:{Authorization:''}});
+    const origin=new URL(response.url).origin;
+    return fetch(origin+path,{method,redirect:'manual'});
+  };
+  assert.equal((await originRequest('/discussions')).status,308);
+  const page=await originRequest('/discussions/');
+  assert.equal(page.status,200);
+  assert.ok(page.headers.get('content-security-policy').includes("script-src 'self'"));
+  assert.ok((await page.text()).includes('Draft workspace'));
+  assert.equal((await originRequest('/discussions/app.mjs')).status,200);
+  assert.equal((await originRequest('/discussions/.env')).status,404);
+  assert.equal((await originRequest('/discussions/index.html','POST')).status,405);
+  assert.equal((await request('',{headers:{Authorization:''}})).status,401);
+});
+
 test('POST validates fields, defaults channel and passes retry key', async t => {
   let saved;
   const request = await fixture(t, { post: async x => { saved=x; return {...x,id:'1'}; } });
