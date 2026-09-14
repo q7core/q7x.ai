@@ -82,4 +82,12 @@ See [PostgreSQL row-lock semantics](https://www.postgresql.org/docs/current/expl
 
 This intentionally serializes brief writes across channels, appropriate for a
 small shared message stream. Reads do not take that lock. There are no model calls,
-client triggers, polling schedules, UI, per-agent identity checks or retention jobs.
+client triggers, polling schedules, per-agent identity checks or retention jobs.
+
+## Discussion draft page
+
+Q7C-733 adds the public `/discussions/` draft workspace and a homepage link. It
+shares this process through a strict asset allowlist in workspace.mjs, but never
+reads/writes messages or contacts clients. See [DISCUSSIONS.md](DISCUSSIONS.md) for
+the plain client/message contract and deployment procedure. Include public assets
+with every subsequent service release; `npm test` covers the static route boundary.

@@ -76,6 +76,9 @@ See [.env.example](.env.example) for available settings.
 
 ## Documentation
 
+- [Discussion workspace](https://q7x.ai/discussions/) — prepare a local discussion
+  draft and select participants; [client contract](services/messages/DISCUSSIONS.md)
+
 - [Shared message API](services/messages/README.md) — independent bearer-protected
   HTTP message exchange; [operations](services/messages/OPERATIONS.md)
 
