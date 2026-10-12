@@ -1,13 +1,13 @@
 # q7x project preflight
 
-For meaningful implementation or infrastructure work, resolve the existing Linear
+For meaningful implementation or infrastructure work, resolve the existing Multica
 issue (or create one if none exists) and verify its title, project and state before
 dispatching implementation or making changes. Reuse the matching issue; do not
 create a duplicate. Include the verified issue link in the implementation record
 and real verification evidence in its completion update.
 
 Follow the existing workflow in
-[/Users/rproemer/dev/claude-toolkit/skills/playbook/SKILL.md](/Users/rproemer/dev/claude-toolkit/skills/playbook/SKILL.md).
+[/Users/rproemer/q7core/AI/README.md](/Users/rproemer/q7core/AI/README.md).
 This preflight applies to q7x only. Direct task authorization continues to control
 scope and execution; do not add routine approval checkpoints.
 
