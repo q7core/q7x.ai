@@ -76,6 +76,8 @@ See [.env.example](.env.example) for available settings.
 
 ## Documentation
 
+- [Brief publishing](services/brief-publisher/README.md) — explicit private preview and confirmation, immutable public snapshots
+
 - [Discussion workspace](https://q7x.ai/discussions/) — prepare a local discussion
   draft and select participants; [client contract](services/messages/DISCUSSIONS.md)
 
